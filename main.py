@@ -1,26 +1,47 @@
 import tkinter
+from pyperclip import copy
 from tkinter import messagebox
+from password_generator import generate_password
+
 
 # PASSWORD GENERATOR
+
+def add_generated_password():
+    password_entry.delete(0, 'end')
+    password_entry.insert(0, generate_password())
+    copy(password_entry.get())
+    messagebox.showinfo(title='Success', message='New password copied to clipboard!')
+
 
 # SAVE PASSWORD
 
 
 def save():
+    ok_to_add = False
 
     website = website_name_entry.get()
     email_username = email_username_entry.get()
     password = password_entry.get()
 
-    # MESSAGE BOX
+    if website == '':
+        messagebox.showerror(title='Error', message='Website empty!')
+    elif email_username == '':
+        messagebox.showerror(title='Error', message='Email/Username empty!')
+    elif password == '':
+        messagebox.showerror(title='Error', message='Password empty!')
+    else:
+        ok_to_add = messagebox.askokcancel(title=website.capitalize(), message=f'Email/Username: {email_username}\n'
+                                                                f'Password: {password}'
+                                                                f'\nPlease confirm details are correct before adding!')
 
-    with open('./data.txt', 'a') as file:
-        file.write(f'{website} | {email_username} | {password}\n')
-
-    website_name_entry.delete(0, 'end')
-    email_username_entry.delete(0, 'end')
-    email_username_entry.insert(0, 'example@example.com')
-    password_entry.delete(0, 'end')
+    if ok_to_add:
+        with open('./data.txt', 'a') as file:
+            file.write(f'{website} | {email_username} | {password}\n')
+        website_name_entry.delete(0, 'end')
+        email_username_entry.delete(0, 'end')
+        email_username_entry.insert(0, 'example@example.com')
+        password_entry.delete(0, 'end')
+        messagebox.showinfo(title='Success', message='Login details saved!')
 
 
 # UI SETUP
@@ -73,7 +94,7 @@ password_entry.grid(row=3, column=1, pady=(10, 10))
 # Generate Password Button
 # NEED TO FIX PADDING ----------------
 
-generate_button = tkinter.Button(text='Generate Password', width=14)
+generate_button = tkinter.Button(text='Generate Password', width=14, command=add_generated_password)
 generate_button.grid(row=3, column=2, pady=(10, 10))
 
 # Add Button
